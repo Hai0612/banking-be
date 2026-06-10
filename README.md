@@ -149,7 +149,7 @@ Alternatively, you can start infrastructure and services separately:
 
 A complete React-based web application is available to interact with this Banking as a Service platform:
 
-**Repository**: [BaaS Bank UI](https://github.com/rajeswarandhandapani/baas-bank-ui)
+**Repository**: [BaaS Bank UI](https://github.com/bankdhandapani/baas-bank-ui)
 
 The frontend provides:
 - User registration and authentication
@@ -175,3 +175,4 @@ The platform implements an abstract saga framework that enables:
 2. **Execution**: Event-driven step progression with state persistence
 3. **Completion**: `completeSaga()` or automatic failure handling with compensation
 4. **Monitoring**: Real-time saga and step instance tracking via REST API
+# banking-be
