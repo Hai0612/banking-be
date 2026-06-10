@@ -1,0 +1,1 @@
+mvn --update-snapshots -s C:\Users\cntt_vuha\appViettelProject\core\.m2\settings_cntt.xml clean compile package deploy
