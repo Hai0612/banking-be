@@ -1,4 +1,4 @@
 package src.main.java.com.bank.ledger.dto;
 
-public class LedgerCreatedResponse {
+public class TransferApprovedEvent {
 }
