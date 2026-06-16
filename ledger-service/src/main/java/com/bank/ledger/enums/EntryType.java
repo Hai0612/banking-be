@@ -1,4 +1,6 @@
 package com.bank.ledger.enums;
 
-public class EntryType {
+public enum EntryType {
+    DEBIT,
+    CREDIT
 }

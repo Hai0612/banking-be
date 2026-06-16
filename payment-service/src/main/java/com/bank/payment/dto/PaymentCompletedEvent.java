@@ -1,4 +1,13 @@
 package com.bank.payment.dto;
 
-public class PaymentCompletedEvent {
-}
+import java.math.BigDecimal;
+import java.util.UUID;
+
+public record PaymentCompletedEvent(
+        Long paymentId,
+        Long fromAccountId,
+        Long toAccountId,
+        BigDecimal amount,
+        String currency,
+        UUID traceId
+) {}

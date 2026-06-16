@@ -1,6 +1,6 @@
-package com.bank.common.saga.payment.events;
+package com.bank.sagaorchestrator.payment.events;
 
-import com.bank.common.saga.event.BaseEvent;
+import com.bank.sagaorchestrator.event.BaseEvent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;

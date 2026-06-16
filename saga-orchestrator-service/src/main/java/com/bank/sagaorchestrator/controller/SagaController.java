@@ -1,8 +1,7 @@
 package com.bank.sagaorchestrator.controller;
 
-import com.bank.common.entity.Payment;
-import com.bank.common.entity.User;
-import com.bank.common.util.SecurityUtil;
+import com.bank.sagaorchestrator.entity.Payment;
+import com.bank.sagaorchestrator.entity.User;
 import com.bank.sagaorchestrator.entity.SagaInstance;
 import com.bank.sagaorchestrator.saga.payment.PaymentProcessingSaga;
 import com.bank.sagaorchestrator.saga.payment.PaymentRequest;
@@ -61,7 +60,7 @@ public class SagaController {
         // Use Saga interface to start saga with payload - this will automatically trigger the first command
         SagaInstance sagaInstance = userOnboardingSaga.startSaga(user);
 
-        log.info("User onboarding saga {} started for user: {}", sagaInstance.getId(), user);
+//        log.info("User onboarding saga {} started for user: {}", sagaInstance.getId(), user);
         return ResponseEntity.accepted().body("User onboarding process started with saga ID: " + sagaInstance.getId());
     }
 

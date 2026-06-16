@@ -1,4 +1,12 @@
 package com.bank.sagaorchestrator.dto;
 
-public class SagaCommand {
-}
+import java.math.BigDecimal;
+import java.util.UUID;
+
+
+
+public record SagaCommand(
+        String sagaId,
+        String stepName,
+        String payload
+) {}

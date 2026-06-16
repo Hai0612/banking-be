@@ -1,178 +1,111 @@
-# Banking as a Service (BaaS) Platform
+Với kiến trúc mày chốt, payment-service là trái tim của hệ thống. Tao sẽ thiết kế theo kiểu “đủ thực chiến để đi phỏng vấn Senior Banking”, không làm CRUD rác.
+🎯 Mục tiêu của payment-service
+Service này phải xử lý được các bài toán:
+Chuyển khoản nội bộ ngân hàng (A → B)
+Idempotency: client bấm 2 lần không bị trừ tiền 2 lần
+Concurrency: 1000 request cùng trừ 1 account
+Outbox Pattern: DB commit rồi mới publish Kafka an toàn
+Saga: Payment thành công nhưng Ledger fail → compensation
+Audit + TraceId: truy vết giao dịch end-to-end
+Retry/DLQ: Kafka duplicate hoặc consumer fail
+🏛️ Kiến trúc Payment Service
 
-## Overview
+Module structure
+📦 Core Domain
+TransferRequest DTO (record, Java 21)
+TransferResponse DTO
+🧠 Transfer Entity
+TransferStatus
+🔐 Idempotency Entity
+💥 Outbox Entity
+⚙️ TransferService — trái tim hệ thống
+Luồng xử lý
+Check idempotency key
+Validate request
+Gọi core-banking-service để lock & debit account nguồn
+Credit account đích
+Lưu Transfer
+Lưu OutboxEvent trong cùng transaction
+Commit DB
+Scheduler publish Kafka từ outbox
+Saga orchestrator consume event và gọi ledger-service
+Code
+📤 Outbox Publisher Scheduler
+🔥 Đây chính là Outbox Pattern chuẩn Senior Banking. DB commit và event publish được tách ra, tránh mất message.
+🚨 Concurrency — bài toán phỏng vấn kinh điển
+“1000 request cùng trừ tiền một account thì sao?”
+Đáp án đúng: lock ở core-banking-service, không lock ở payment-service.
+Core Banking dùng Pessimistic Lock
+Debit logic
+💡 Vì row bị lock, 1000 request sẽ serialize theo từng account → không bị âm tiền.👉 Đây là chỗ Senior interviewer rất thích hỏi.
+🔁 Idempotency — chống double click
+Kịch bản
+Client gửi request với Idempotency-Key: abc123
+Server xử lý thành công và lưu response
+Client timeout, gửi lại cùng key
+Server trả lại response cũ, không tạo giao dịch mới
+IdempotencyService
+🔥 Đây là câu trả lời chuẩn cho câu “khách bấm chuyển khoản 2 lần thì sao?”
+🎭 Saga Integration
+Payment → Saga → Ledger
 
-A production-ready Banking as a Service platform built with Spring Boot microservices architecture, featuring modern saga orchestration patterns for distributed transaction management. The platform demonstrates enterprise-grade banking operations with event-driven communication and robust error handling.
+Flow
+Payment publish TRANSFER_COMPLETED
+Saga Orchestrator consume event
+Gọi ledger-service tạo double-entry
+Nếu ledger fail → publish compensation event
+Payment nhận compensation → mark transfer REVERSED và gọi core-banking reverse balance
+Compensation Event
+Payment Consumer
+🔥 Đây là điểm phân biệt Senior với Mid: biết dùng Saga + Compensation thay vì cố 2PC.
+🧾 API Controller
+🗄️ PostgreSQL Tables
+transfers
+payment_idempotency_keys
+outbox_events
+🔥 Những điểm "Senior Banking" mày đang có
+Feature
+Giá trị phỏng vấn
+Idempotency
+Chống duplicate transfer
+Pessimistic Lock
+Chống race condition balance
+Outbox Pattern
+Exactly-once-ish event publishing
+Kafka Event
+Event-driven banking
+Saga + Compensation
+Distributed transaction
+Double-entry Ledger
+Chuẩn hệ thống tài chính
+TraceId/MDC
+Observability thực chiến
 
-## Key Features
+💀 Với riêng payment-service này, nếu code sạch + test concurrency + explain được trade-off, mày đã ở level Senior Java Banking khá mạnh rồi.
+🚀 Nâng cấp tiếp theo (nếu muốn lên Expert)
+Redis Distributed Lock cho idempotency ở scale lớn
+Transactional Inbox ở consumer side để chống Kafka duplicate
+DLQ + Retry Topic cho Kafka
+Fraud Check async trước khi complete transfer
+Transfer State Machine (PENDING → FRAUD_CHECK → PROCESSING → COMPLETED)
+Rate Limit per customer
+Sharding account theo customerId khi scale cực lớn
+💬 Chốt vibe
+Đây không còn là "Spring Boot CRUD" nữa. Đây là mini core payment engine của ngân hàng:
+✔ Transaction chuẩn
+✔ Concurrency chuẩn
+✔ Event-driven chuẩn
+✔ Distributed transaction chuẩn
+✔ Audit/Trace chuẩn
+✔ Kiến trúc đủ để nói chuyện với Senior/Lead interviewer
+Nếu muốn, tao có thể vibecoding tiếp:
+Feign client giữa payment ↔ core-banking
+Kafka config production-grade (acks, idempotent producer, retry, DLQ)
+Transactional Inbox ở Saga Orchestrator
+JUnit/Testcontainers test concurrency 1000 threads
+Thiết kế Ledger double-entry chi tiết
+State machine cho transfer
+ELK + MDC + TraceId end-to-end
+Flow full sequence diagram cho toàn hệ thống 6 services
+👉 Nếu muốn build tiếp theo kiểu "production-grade banking", tao recommend đi tiếp Ledger Service, vì đó là nơi hệ thống thật sự "ngân hàng" chứ không còn là ví điện tử nữa.
 
-- **Modern Saga Architecture**: Abstract saga pattern with type-safe lifecycle management and compensation logic
-- **Complete Banking Operations**: User onboarding, account management, payment processing, and transaction recording
-- **Event-Driven Communication**: Apache Kafka with Spring Cloud Stream for reliable asynchronous messaging
-- **Security & Authentication**: OAuth 2.0/JWT integration with Keycloak, role-based access control (RBAC)
-- **Admin Dashboard**: Unified REST endpoint providing consolidated view of all system data
-- **Production-Ready Infrastructure**: MySQL database, Docker containerization, service discovery, and API gateway
-
-## Architecture
-
-### Technology Stack
-- **Framework**: Spring Boot 3.x with Java 21
-- **Build Tool**: Maven multi-module project with centralized dependency management
-- **Database**: MySQL 8.0 with service-specific schemas and connection pooling
-- **Authentication**: Keycloak OAuth 2.0, OpenID Connect, JWT token validation
-- **Messaging**: Apache Kafka + Spring Cloud Stream for event-driven architecture
-- **Orchestration**: Modern abstract saga pattern for distributed transaction coordination
-- **Infrastructure**: Docker Compose, Eureka service discovery, Spring Cloud Gateway
-
-### Microservices
-
-1. **API Gateway** - Unified entry point with routing, authentication, and admin dashboard aggregation
-2. **Service Discovery** - Eureka-based service registration and health monitoring
-3. **User Service** - User registration, authentication, and management with saga integration
-4. **Account Service** - Account lifecycle management, balance operations, payment processing
-5. **Transaction Service** - Transaction recording and history tracking
-6. **Payment Service** - Payment validation, processing, and status management
-7. **Notification Service** - Event-driven email notifications for banking operations
-8. **Saga Orchestrator Service** - Modern saga pattern implementation with state management and compensation
-9. **Common Library** - Shared entities, events, commands, and utilities
-
-## Saga Flows
-
-### 1. User Onboarding Saga
-
-```mermaid
-graph LR
-    A[User Registration] --> B[Create User]
-    B --> C{User Role?}
-    C -->|Admin| D[Send Admin Notification]
-    C -->|Regular| E[Create Account]
-    E --> F[Send Welcome Notification]
-    E --> G[Account Creation Failed] 
-    G --> H[Delete User - Compensation]
-    D --> I[Saga Complete]
-    F --> I
-    H --> J[Saga Failed]
-```
-
-**Flow Steps:**
-1. **Create User** → user-service creates user account
-2. **Open Account** → account-service creates bank account (skipped for admin users)
-3. **Send Notification** → notification-service sends welcome email
-4. **Compensation** → Delete user if account creation fails
-
-### 2. Payment Processing Saga
-
-```mermaid
-graph LR
-    A[Payment Request] --> B[Validate Payment]
-    B --> C[Process Payment]
-    C --> D[Record Transaction]
-    D --> E[Update Payment Status]
-    E --> F[Send Notification]
-    F --> G[Saga Complete]
-    
-    B --> H[Validation Failed]
-    C --> I[Processing Failed]
-    D --> J[Transaction Failed]
-    
-    H --> K[Saga Failed]
-    I --> L[Update Status to FAILED]
-    J --> L
-    L --> M[Send Failure Notification]
-    M --> K
-```
-
-**Flow Steps:**
-1. **Validate Payment** → account-service validates source account and balance
-2. **Process Payment** → payment-service processes the transaction
-3. **Record Transaction** → transaction-service records debit/credit entries
-4. **Update Status** → payment-service marks payment as completed
-5. **Send Notification** → notification-service sends confirmation email
-6. **Compensation** → Handle failures with appropriate notifications and status updates
-
-## API Endpoints
-
-### Saga Management
-- `POST /api/saga/start/user-onboarding` - Start user onboarding saga
-- `POST /api/saga/start/payment-processing` - Start payment processing saga
-- `GET /api/saga/instances` - View all saga instances with step details (Admin only)
-
-### Core Operations
-- `POST /api/users/register` - User registration
-- `GET /api/admin/dashboard` - System-wide data aggregation (Admin only)
-
-### Authentication
-- **BAAS_ADMIN**: Full system access, can view all data and saga instances
-- **ACCOUNT_HOLDER**: Standard user operations, personal data access only
-
-## Quick Start
-
-### Prerequisites
-- Java 21
-- Docker & Docker Compose
-- Maven 3.8+
-
-### Running the Platform
-
-You can start all infrastructure and services using Docker Compose for a fully containerized setup:
-
-1. **Start All Services with Docker Compose**:
-   ```bash
-   ./start-docker-compse.sh
-   ```
-   This script will launch all required infrastructure and Spring Boot microservices using Docker Compose. Use this for local development or demo environments where you want everything running in containers.
-
-Alternatively, you can start infrastructure and services separately:
-
-2. **Start Infrastructure Only**:
-   ```bash
-   ./start-infra.sh
-   ```
-
-3. **Build and Start Spring Boot Services (Locally)**:
-   ```bash
-   ./start-springboot-services.sh
-   ```
-
-4. **Access Points**:
-   - **API Gateway**: http://localhost:8080
-   - **Keycloak Admin**: http://localhost:8180/admin (admin/admin)
-   - **Service Discovery**: http://localhost:8761
-
-## Observability & Tracing
-
-- All microservices are instrumented with the OpenTelemetry Java Agent for distributed tracing.
-- Traces and span data are printed directly to each service’s logs—no extra setup required.
-- Trace and span IDs are included in all log entries for easy correlation across services.
-
-## Frontend Application
-
-A complete React-based web application is available to interact with this Banking as a Service platform:
-
-**Repository**: [BaaS Bank UI](https://github.com/bankdhandapani/baas-bank-ui)
-
-The frontend provides:
-- User registration and authentication
-- Account management dashboard
-- Payment processing interface
-- Transaction history viewing
-- Admin panel for system monitoring
-- Saga instance tracking and monitoring
-
-## Modern Saga Pattern
-
-The platform implements an abstract saga framework that enables:
-
-- **Type-Safe Lifecycle**: Abstract base class with `startSaga()`, `completeSaga()`, `failSaga()` methods
-- **Event-Driven Coordination**: Services communicate via Kafka events while maintaining clear orchestration
-- **State Management**: Persistent saga instances and step tracking with MySQL storage
-- **Compensation Logic**: Automatic rollback mechanisms with comprehensive error handling
-- **Step Monitoring**: Real-time visibility into saga execution with detailed step instances
-
-### Saga Lifecycle
-
-1. **Initialization**: `startSaga(payload)` → Creates SagaInstance
-2. **Execution**: Event-driven step progression with state persistence
-3. **Completion**: `completeSaga()` or automatic failure handling with compensation
-4. **Monitoring**: Real-time saga and step instance tracking via REST API
-# banking-be

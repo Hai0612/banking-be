@@ -1,7 +1,7 @@
-package com.bank.user.repository;
+package com.bank.auth.repository;
 
 
-import com.bank.user.entity.User;
+import com.bank.auth.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

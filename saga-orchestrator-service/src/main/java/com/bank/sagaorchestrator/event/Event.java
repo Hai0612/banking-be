@@ -1,4 +1,4 @@
-package com.bank.common.saga.event;
+package com.bank.sagaorchestrator.event;
 
 import jakarta.validation.constraints.NotNull;
 

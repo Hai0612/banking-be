@@ -1,4 +1,17 @@
 package com.bank.payment.dto;
 
-public class CreatePaymentRequest {
+import java.math.BigDecimal;
+
+public record CreatePaymentRequest(
+
+        String idempotencyKey,
+
+        Long fromAccountId,
+
+        Long toAccountId,
+
+        BigDecimal amount,
+
+        String currency
+) {
 }

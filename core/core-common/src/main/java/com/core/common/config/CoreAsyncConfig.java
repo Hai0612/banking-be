@@ -1,4 +1,4 @@
-package com.core.config;
+package com.core.common.config;
 
 import io.micrometer.context.ContextSnapshotFactory; // New Import
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;

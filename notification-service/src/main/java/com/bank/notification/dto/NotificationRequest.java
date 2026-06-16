@@ -1,4 +1,0 @@
-package com.bank.notification.dto;
-
-public class NotificationRequest {
-}

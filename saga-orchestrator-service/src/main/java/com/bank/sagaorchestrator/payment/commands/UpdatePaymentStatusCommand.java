@@ -1,7 +1,7 @@
-package com.bank.common.saga.payment.commands;
+package com.bank.sagaorchestrator.payment.commands;
 
 import com.bank.common.entity.Payment;
-import com.bank.common.saga.command.BaseCommand;
+import com.bank.sagaorchestrator.command.BaseCommand;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

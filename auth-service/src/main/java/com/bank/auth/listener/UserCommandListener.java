@@ -1,21 +1,8 @@
-package com.bank.user.listener;
+package com.bank.auth.listener;
 
-import com.bank.common.entity.User;
-import com.bank.common.saga.useronboarding.commands.CreateUserCommand;
-import com.bank.common.saga.useronboarding.commands.DeleteUserCommand;
-import com.bank.common.saga.useronboarding.events.UserCreatedEvent;
-import com.bank.common.saga.useronboarding.events.UserCreationFailedEvent;
-import com.bank.common.saga.useronboarding.events.UserDeletedEvent;
-import com.bank.common.saga.useronboarding.events.UserDeletionFailedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cloud.stream.function.StreamBridge;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
-
-import org.springframework.messaging.Message;
-
-import java.util.function.Consumer;
 
 @Slf4j
 @Component

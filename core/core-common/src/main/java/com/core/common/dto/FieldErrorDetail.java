@@ -1,4 +1,4 @@
-package com.core.dto;
+package com.core.common.dto;
 
 /**
  * A simple, immutable DTO for carrying details of a single field validation error.

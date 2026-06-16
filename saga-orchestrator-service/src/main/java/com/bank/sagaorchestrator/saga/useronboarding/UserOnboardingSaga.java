@@ -1,7 +1,7 @@
 package com.bank.sagaorchestrator.saga.useronboarding;
 
 import com.bank.common.AppConstants;
-import com.bank.common.entity.User;
+import com.bank.sagaorchestrator.entity.User;
 import com.bank.common.saga.useronboarding.commands.CreateUserCommand;
 import com.bank.common.saga.useronboarding.commands.DeleteUserCommand;
 import com.bank.common.saga.useronboarding.commands.OpenAccountCommand;

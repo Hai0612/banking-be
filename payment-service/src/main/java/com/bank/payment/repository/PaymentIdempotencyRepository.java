@@ -1,0 +1,16 @@
+package com.bank.payment.repository;
+
+import com.bank.payment.entity.PaymentIdempotencyKey;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+
+@Repository
+public interface PaymentIdempotencyRepository
+        extends JpaRepository<PaymentIdempotencyKey, Long> {
+
+    Optional<PaymentIdempotencyKey>
+    findByIdempotencyKey(String key);
+}

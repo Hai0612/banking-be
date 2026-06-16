@@ -1,0 +1,27 @@
+filebeat.inputs:
+  - type: log
+    enabled: true
+    paths:
+      - /var/log/banking/*/app.log   # collect tất cả service
+    json.keys_under_root: true       # parse JSON log thành fields
+    json.overwrite_keys: true
+    json.add_error_key: true
+    json.message_key: message
+
+    # Thêm metadata để biết file nào
+    fields:
+      log_type: application
+    fields_under_root: true
+
+    # Multiline — bắt stack trace Java thành 1 event
+#    multiline.pattern: '^{'
+#    multiline.negate: true
+#    multiline.match: after
+
+output.logstash:
+  hosts: ["logstash:5044"]
+  loadbalance: true
+
+# Logging của filebeat chính nó
+logging.level: warning
+logging.to_files: false

@@ -1,48 +1,29 @@
 package com.bank.sagaorchestrator.entity;
 
-import com.bank.sagaorchestrator.constants.SagaConstants;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
-@Table(name = "saga_instance")
 @Data
 @Builder
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "saga_instances")
 public class SagaInstance {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "saga_name", nullable = false)
-    private String sagaName;
+    @Column(unique = true)
+    private String sagaId;
 
-    @Column(name = "current_step")
-    private int currentStep;
+    private String transactionId;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private SagaConstants.SagaStatus status;
+    private String state; // STARTED, COMPLETED, FAILED, COMPENSATED
 
-    @OneToMany(mappedBy = "sagaInstance", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @OrderBy("createdAt ASC")
-    private List<SagaStepInstance> stepInstances;
+    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    public SagaInstance() {}
 }

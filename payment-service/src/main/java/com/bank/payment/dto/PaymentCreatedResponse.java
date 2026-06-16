@@ -1,4 +1,16 @@
 package com.bank.payment.dto;
 
-public class PaymentCreatedResponse {
+import java.time.Instant;
+import java.util.UUID;
+
+public record PaymentCreatedResponse(
+
+        UUID transactionId,
+
+        Long paymentId,
+
+        String status,
+
+        Instant createdAt
+) {
 }

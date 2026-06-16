@@ -1,6 +1,6 @@
 package com.bank.sagaorchestrator.saga.payment;
 
-import com.bank.common.entity.Payment;
+import com.bank.sagaorchestrator.entity.Payment;
 import com.bank.common.saga.payment.commands.ProcessPaymentCommand;
 import com.bank.common.saga.payment.commands.RecordTransactionCommand;
 import com.bank.common.saga.payment.commands.UpdatePaymentStatusCommand;

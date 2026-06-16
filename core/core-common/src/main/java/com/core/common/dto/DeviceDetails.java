@@ -1,4 +1,4 @@
-package com.core.dto;
+package com.core.common.dto;
 
 import java.util.Optional;
 

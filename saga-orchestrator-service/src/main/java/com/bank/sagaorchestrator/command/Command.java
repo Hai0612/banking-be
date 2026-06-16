@@ -1,4 +1,4 @@
-package com.bank.common.saga.command;
+package com.bank.sagaorchestrator.command;
 
 import jakarta.validation.constraints.NotNull;
 

@@ -1,4 +1,17 @@
 package com.bank.payment.enums;
 
-public class PaymentStatus {
+
+public enum PaymentStatus {
+
+    PENDING,
+
+    PROCESSING,
+
+    COMPLETED,
+
+    FAILED,
+
+    COMPENSATING,
+
+    COMPENSATED
 }

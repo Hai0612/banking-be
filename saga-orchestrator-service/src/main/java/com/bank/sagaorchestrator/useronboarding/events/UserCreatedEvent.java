@@ -1,16 +1,15 @@
-package com.bank.common.saga.useronboarding.events;
-
-import java.time.Instant;
+package com.bank.sagaorchestrator.useronboarding.events;
 
 import com.bank.common.entity.User;
-import com.bank.common.saga.event.BaseEvent;
-
+import com.bank.sagaorchestrator.event.BaseEvent;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+
+import java.time.Instant;
 
 /**
  * Event indicating a user was successfully created.

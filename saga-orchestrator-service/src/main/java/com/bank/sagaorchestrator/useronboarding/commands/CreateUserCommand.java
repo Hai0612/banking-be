@@ -1,7 +1,7 @@
-package com.bank.common.saga.useronboarding.commands;
+package com.bank.sagaorchestrator.useronboarding.commands;
 
-import com.bank.common.saga.command.BaseCommand;
 import com.bank.common.entity.User;
+import com.bank.sagaorchestrator.command.BaseCommand;
 import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,4 +1,7 @@
-package com.core.common.mapper;
+package com.bank.customer.mapper;
+
+import com.bank.customer.dto.response.CustomerResponse;
+import com.bank.customer.entity.Customer;
 
 public final class CustomerMapper {
 

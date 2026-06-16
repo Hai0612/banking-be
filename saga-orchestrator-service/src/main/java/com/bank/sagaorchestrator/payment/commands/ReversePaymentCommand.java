@@ -1,6 +1,6 @@
-package com.bank.common.saga.payment.commands;
+package com.bank.sagaorchestrator.payment.commands;
 
-import com.bank.common.saga.command.BaseCommand;
+import com.bank.sagaorchestrator.command.BaseCommand;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.AllArgsConstructor;

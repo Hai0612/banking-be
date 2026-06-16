@@ -1,50 +1,27 @@
 package com.bank.sagaorchestrator.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.bank.sagaorchestrator.constants.SagaConstants;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "saga_step_instance")
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-public class SagaStepInstance {
+@Table(name = "saga_steps")
+public class SagaStep {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "saga_instance_id", nullable = false)
-    @JsonIgnore
-    private SagaInstance sagaInstance;
+    private String sagaId;
 
-    @Column(name = "step_name", nullable = false)
     private String stepName;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
-    private SagaConstants.SagaStepStatus status;
+    private String status; // PENDING, SUCCESS, FAILED, COMPENSATED
 
-    @Lob
-    @Column(name = "payload", columnDefinition = "TEXT")
+    private Integer retryCount = 0;
+
+    @Column(columnDefinition = "jsonb")
     private String payload;
 
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
+    private LocalDateTime executedAt = LocalDateTime.now();
 
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    public SagaStep() {}
 }

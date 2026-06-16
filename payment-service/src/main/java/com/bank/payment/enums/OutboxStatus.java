@@ -1,4 +1,11 @@
 package com.bank.payment.enums;
 
-public class OutboxStatus {
+
+public enum OutboxStatus {
+
+    PENDING,
+
+    SENT,
+
+    FAILED
 }

@@ -9,22 +9,28 @@
     <version>3.4.6</version>
     <relativePath />
   </parent>
-  <groupId>com.rajeswaran</groupId>
+  <groupId>com.bank</groupId>
   <artifactId>banking-as-service</artifactId>
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Banking as a Service - Parent</name>
   <description>Parent project for Banking as a Service microservices platform</description>
   <modules>
-    <module>common-lib</module>
-    <module>account-service</module>
-    <module>user-service</module>
+    <module>auth-service</module>
     <module>payment-service</module>
     <module>transaction-service</module>
-    <module>notification-service</module>
     <module>api-gateway</module>
     <module>service-discovery</module>
+    <module>core</module>
+    <module>core/core-common</module>
+    <module>core/core-security</module>
+    <module>core/core-observability</module>
+    <module>core/core-redis</module>
+    <module>core/core-kafka</module>
     <module>saga-orchestrator-service</module>
+    <module>customer-service</module>
+    <module>ledger-service</module>
+    <module>fraud-service</module>
     <!-- Modules will be added here as submodules are created -->
   </modules>
   <properties>
@@ -74,7 +80,10 @@
         <version>${opentelemetry.javaagent.version}</version>
         <scope>runtime</scope>
       </dependency>
-
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+        </dependency>
       <!-- Command/Event Framework Dependencies (lightweight approach) -->
       <!-- Only keep non-Spring Boot dependencies here -->
     </dependencies>
@@ -94,19 +103,6 @@
               </exclude>
             </excludes>
           </configuration>
-          <executions>
-            <execution>
-              <id>default</id>
-              <phase>none</phase>
-            </execution>
-            <execution>
-              <id>repackage-only</id>
-              <goals>
-                <goal>repackage</goal>
-              </goals>
-              <phase>package</phase>
-            </execution>
-          </executions>
         </plugin>
         <plugin>
           <groupId>com.google.cloud.tools</groupId>
@@ -117,18 +113,9 @@
               <image>eclipse-temurin:21-jre</image>
             </from>
             <to>
-              <image>rajeswaran/baas-${project.artifactId}:${project.version}</image>
+              <image>bank/baas-${project.artifactId}:${project.version}</image>
             </to>
           </configuration>
-          <executions>
-            <execution>
-              <id>build-docker-image</id>
-              <phase>package</phase>
-              <goals>
-                <goal>dockerBuild</goal>
-              </goals>
-            </execution>
-          </executions>
         </plugin>
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>

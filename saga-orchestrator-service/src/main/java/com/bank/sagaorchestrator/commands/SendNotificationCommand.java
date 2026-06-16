@@ -1,6 +1,6 @@
-package com.bank.common.saga.notification.commands;
+package com.bank.sagaorchestrator.commands;
 
-import com.bank.common.saga.command.BaseCommand;
+import com.bank.sagaorchestrator.command.BaseCommand;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,12 +1,11 @@
-package com.bank.common.saga.useronboarding.events;
+package com.bank.sagaorchestrator.useronboarding.events;
 
-import java.time.Instant;
-
-import com.bank.common.saga.event.BaseEvent;
-
+import com.bank.sagaorchestrator.event.BaseEvent;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+
+import java.time.Instant;
 
 /**
  * Event indicating user creation failed.

@@ -1,4 +1,8 @@
 package com.bank.customer.enums;
 
-public class KycStatus {
+public enum KycStatus {
+
+    PENDING,
+    APPROVED,
+    REJECTED
 }

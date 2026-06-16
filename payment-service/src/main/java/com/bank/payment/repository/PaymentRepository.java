@@ -1,13 +1,19 @@
-package com.rajeswaran.payment.repository;
+package com.bank.payment.repository;
 
-import com.bank.common.entity.Payment;
+import com.bank.payment.entity.Payment;
+import com.bank.payment.entity.PaymentIdempotencyKey;
+import com.bank.payment.entity.PaymentOutbox;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Repository
-public interface PaymentRepository extends JpaRepository<Payment, Long> {
-    // Custom query methods if needed
-    List<Payment> findByCreatedBy(String username);
+public interface PaymentRepository
+        extends JpaRepository<Payment, Long> {
+
+    Optional<Payment> findByTransactionId(
+            UUID transactionId
+    );
 }

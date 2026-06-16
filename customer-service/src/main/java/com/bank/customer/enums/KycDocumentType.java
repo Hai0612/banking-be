@@ -1,4 +1,8 @@
 package com.bank.customer.enums;
 
-public class KycDocumentType {
+public enum KycDocumentType {
+
+    CCCD,
+    PASSPORT,
+    DRIVING_LICENSE
 }

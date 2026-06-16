@@ -2,15 +2,13 @@ package com.bank.sagaorchestrator.service;
 
 import com.bank.sagaorchestrator.constants.SagaConstants;
 import com.bank.sagaorchestrator.entity.SagaInstance;
-import com.bank.sagaorchestrator.entity.SagaStepInstance;
+import com.bank.sagaorchestrator.entity.SagaStep;
 import com.bank.sagaorchestrator.repository.SagaInstanceRepository;
 import com.bank.sagaorchestrator.repository.SagaStepInstanceRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 import java.util.List;
 
@@ -94,7 +92,7 @@ public class SagaStateManagerImpl implements SagaStateManager {
         SagaInstance sagaInstance = sagaInstanceRepository.findById(sagaId)
                 .orElseThrow(() -> new RuntimeException("Saga instance not found: " + sagaId));
         
-        SagaStepInstance stepInstance = SagaStepInstance.builder()
+        SagaStep stepInstance = SagaStep.builder()
                 .sagaInstance(sagaInstance)
                 .stepName(stepName)
                 .status(status)
@@ -109,7 +107,7 @@ public class SagaStateManagerImpl implements SagaStateManager {
                 .orElseThrow(() -> new RuntimeException("Saga instance not found: " + sagaId));
         
         // Find the most recent step with the given name
-        SagaStepInstance stepInstance = sagaStepInstanceRepository.findFirstBySagaInstanceAndStepNameOrderByCreatedAtDesc(sagaInstance, stepName)
+        SagaStep stepInstance = sagaStepInstanceRepository.findFirstBySagaInstanceAndStepNameOrderByCreatedAtDesc(sagaInstance, stepName)
                 .orElseThrow(() -> new RuntimeException("Step instance not found for saga " + sagaId + " and step: " + stepName));
         
         stepInstance.setStatus(status);

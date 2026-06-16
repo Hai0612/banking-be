@@ -1,21 +1,17 @@
-INSERT INTO audits (service_name, user_id, action, entity, entity_id, old_value, new_value, trace_id)
+INSERT INTO customers (user_id, full_name, email, phone, created_at, updated_at)
 VALUES
--- Auth Service
-('Auth Service', 1, 'LOGIN', 'User', 1, NULL, '{"status":"SUCCESS"}', gen_random_uuid()),
-('Auth Service', 2, 'LOGIN', 'User', 2, NULL, '{"status":"FAILED","reason":"Wrong password"}', gen_random_uuid()),
+    (1, 'Alice Nguyen', 'alice@gmail.com', '0901000001', now(), now()),
+    (2, 'Bob Tran',    'bob@gmail.com',   '0901000002', now(), now()),
+    (3, 'Carol Le',    'carol@gmail.com', '0901000003', now(), now());
 
--- Account Service
-('Account Service', 1, 'UPDATE_BALANCE', 'Account', 1, '{"current_balance":1500.00}', '{"current_balance":1400.00}', gen_random_uuid()),
-('Account Service', 2, 'UPDATE_BALANCE', 'Account', 3, '{"current_balance":50.00}', '{"current_balance":25.00}', gen_random_uuid()),
-('Account Service', 3, 'CREATE_ACCOUNT', 'Account', 6, NULL, '{"account_type":"SAVINGS","current_balance":100.00}', gen_random_uuid()),
+    INSERT INTO kyc_documents (customer_id, doc_type, doc_number, status, submitted_at, verified_at)
+    VALUES
+        -- Alice: pending KYC
+        (1, 'CCCD', '001200000001', 'PENDING', now(), NULL),
 
--- Payment Service
-('Payment Service', 1, 'TRANSFER', 'Transaction', 101, '{"status":"PENDING"}', '{"status":"COMPLETED","amount":100.00,"from_account":1,"to_account":2}', gen_random_uuid()),
-('Payment Service', 2, 'TRANSFER', 'Transaction', 102, '{"status":"PENDING"}', '{"status":"FAILED","reason":"Insufficient funds"}', gen_random_uuid()),
+        -- Bob: verified
+        (2, 'CCCD', '001200000002', 'VERIFIED', now() - interval '5 days', now() - interval '2 days'),
 
--- Fraud Service
-('Fraud Service', 4, 'FLAG_TRANSACTION', 'Transaction', 103, '{"status":"COMPLETED"}', '{"status":"SUSPICIOUS"}', gen_random_uuid()),
-
--- Notification Service
-('Notification Service', 1, 'SEND_EMAIL', 'Notification', 201, NULL, '{"status":"SENT","to":"user1@example.com"}', gen_random_uuid()),
-('Notification Service', 2, 'SEND_SMS', 'Notification', 202, NULL, '{"status":"FAILED","to":"+123456789"}', gen_random_uuid());
+        -- Carol: rejected then resubmitted
+        (3, 'PASSPORT', 'P123456789', 'REJECTED', now() - interval '10 days', now() - interval '7 days'),
+        (3, 'PASSPORT', 'P123456789', 'PENDING', now(), NULL);

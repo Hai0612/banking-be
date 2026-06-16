@@ -1,11 +1,11 @@
-package com.bank.common.saga.event;
-
-import java.time.Instant;
+package com.bank.sagaorchestrator.event;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
+
+import java.time.Instant;
 
 /**
  * Base abstract class for all events with common fields.

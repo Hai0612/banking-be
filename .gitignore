@@ -44,6 +44,3 @@ Thumbs.db
 # Spring Boot
 spring.log
 
-# Ignore local configuration
-application-local.properties
-application-local.yml
