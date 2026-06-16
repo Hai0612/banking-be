@@ -1,58 +1,81 @@
-CREATE TABLE payments (
+CREATE TABLE transfers (
     id BIGSERIAL PRIMARY KEY,
 
-    transaction_id UUID NOT NULL UNIQUE,
+    transfer_ref VARCHAR(100) UNIQUE NOT NULL,
 
-    from_account_id BIGINT NOT NULL,
+    source_account VARCHAR(30) NOT NULL,
 
-    to_account_id BIGINT NOT NULL,
+    destination_account VARCHAR(30) NOT NULL,
 
-    amount NUMERIC(20,2) NOT NULL,
+    amount NUMERIC(19,4) NOT NULL,
 
-    currency CHAR(3) NOT NULL DEFAULT 'USD',
+    currency VARCHAR(10),
 
-    status VARCHAR(20) NOT NULL,
+    status VARCHAR(30) NOT NULL,
 
-    created_at TIMESTAMP NOT NULL DEFAULT now(),
+    failure_reason TEXT,
 
-    updated_at TIMESTAMP NOT NULL DEFAULT now(),
+    trace_id VARCHAR(100),
 
-    version BIGINT NOT NULL DEFAULT 0
-);v
+    created_at TIMESTAMP NOT NULL,
 
--- Idempotency Key
+    completed_at TIMESTAMP
+);
+CREATE TABLE transfer_state_history (
+    id BIGSERIAL PRIMARY KEY,
+
+    transfer_id BIGINT NOT NULL,
+
+    old_status VARCHAR(30),
+
+    new_status VARCHAR(30),
+
+    changed_at TIMESTAMP NOT NULL
+);
 CREATE TABLE payment_idempotency_keys (
     id BIGSERIAL PRIMARY KEY,
 
-    idempotency_key VARCHAR(100)
-        UNIQUE NOT NULL,
+    idempotency_key VARCHAR(255) UNIQUE NOT NULL,
 
-    payment_id BIGINT,
+    request_hash VARCHAR(255) NOT NULL,
 
-    status VARCHAR(20) NOT NULL,
+    transfer_id BIGINT,
 
-    response JSONB,
+    response_body JSONB,
 
-    created_at TIMESTAMP DEFAULT now()
+    status VARCHAR(30),
+
+    expired_at TIMESTAMP,
+
+    created_at TIMESTAMP NOT NULL
 );
+CREATE TABLE outbox_events (
+    id BIGSERIAL PRIMARY KEY,
 
--- Outbox for eventsCREATE TABLE payment_outbox (
+    aggregate_type VARCHAR(100),
 
-                        id BIGSERIAL PRIMARY KEY,
+    aggregate_id VARCHAR(100),
 
-                        transaction_id UUID NOT NULL,
+    event_type VARCHAR(100),
 
-                        payment_id BIGINT NOT NULL,
+    payload JSONB,
 
-                        event_type VARCHAR(50) NOT NULL,
+    status VARCHAR(30),
 
-                        payload JSONB NOT NULL,
+    retry_count INT DEFAULT 0,
 
-                        status VARCHAR(20) NOT NULL,
+    created_at TIMESTAMP,
 
-                        retry_count INT DEFAULT 0,
+    published_at TIMESTAMP
+);
+CREATE TABLE inbox_events (
+    id BIGSERIAL PRIMARY KEY,
 
-                        created_at TIMESTAMP DEFAULT now(),
+    event_id VARCHAR(100) UNIQUE,
 
-                        sent_at TIMESTAMP
-                    );
+    event_type VARCHAR(100),
+
+    processed BOOLEAN DEFAULT FALSE,
+
+    processed_at TIMESTAMP
+);
