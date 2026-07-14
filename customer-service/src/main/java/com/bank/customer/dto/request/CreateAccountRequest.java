@@ -1,7 +1,7 @@
 package com.bank.customer.dto.request;
 
 
-import com.bank.account.enums.AccountType;
+import com.bank.customer.enums.AccountType;
 
 public record CreateAccountRequest(
         Long customerId,

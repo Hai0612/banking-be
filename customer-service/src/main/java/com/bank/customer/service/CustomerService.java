@@ -14,6 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -21,6 +24,13 @@ import java.time.LocalDateTime;
 public class CustomerService {
 
     private final CustomerRepository customerRepository;
+
+    @Transactional(readOnly = true)
+    public List<CustomerResponse> getAll() {
+        return customerRepository.findAll().stream()
+                .map(CustomerMapper::toResponse)
+                .toList();
+    }
 
     public CustomerResponse create(
             CreateCustomerRequest request
@@ -36,9 +46,11 @@ public class CustomerService {
 
         Customer customer = Customer.builder()
                 .userId(request.userId())
+                .customerNo("CUST-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase())
                 .fullName(request.fullName())
                 .email(request.email())
                 .phone(request.phone())
+                .status("ACTIVE")
                 .build();
 
         customer = customerRepository.save(customer);

@@ -13,14 +13,24 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-@Tag(name = "Customer API", description = "Customer management APIs")
 
+import java.util.List;
+
+@Tag(name = "Customer API", description = "Customer management APIs")
 @RestController
 @RequestMapping("/api/customers")
 @RequiredArgsConstructor
 public class CustomerController {
 
     private final CustomerService customerService;
+
+    @SecurityRequirement(name = "internalApiKey")
+    @Operation(summary = "Get all customers")
+    @GetMapping
+    public ResponseEntity<ApiResponseFormat<List<CustomerResponse>>> getAll() {
+        List<CustomerResponse> responses = customerService.getAll();
+        return ResponseEntity.ok(ApiResponseFormat.success(responses));
+    }
 
     @SecurityRequirement(name = "internalApiKey")
     @Operation(summary = "Create customer")

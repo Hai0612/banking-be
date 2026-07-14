@@ -1,8 +1,8 @@
 package com.bank.customer.controller;
 
-import com.bank.account.dto.AccountResponse;
-import com.bank.account.dto.CreateAccountRequest;
-import com.bank.account.service.AccountService;
+import com.bank.customer.dto.request.CreateAccountRequest;
+import com.bank.customer.dto.response.AccountResponse;
+import com.bank.customer.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

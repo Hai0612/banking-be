@@ -1,17 +1,22 @@
 package com.bank.customer.service;
 
-import com.bank.account.dto.AccountResponse;
-import com.bank.account.dto.CreateAccountRequest;
-import com.bank.account.entity.Account;
-import com.bank.account.entity.AccountSnapshot;
+import com.bank.customer.dto.request.CreateAccountRequest;
+import com.bank.customer.dto.response.AccountResponse;
+import com.bank.customer.entity.Account;
+import com.bank.customer.entity.AccountSnapshot;
+import com.bank.customer.repository.AccountRepository;
+import com.bank.customer.repository.AccountSnapshotRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class AccountService {
 
     private final AccountRepository accountRepository;
@@ -19,24 +24,29 @@ public class AccountService {
 
     public AccountResponse create(CreateAccountRequest req) {
 
-        Account acc = new Account();
-        acc.setCustomerId(req.customerId());
-        acc.setAccountType(req.accountType());
-        acc.setCurrency(req.currency() != null ? req.currency() : "USD");
-        acc.setCurrentBalance(BigDecimal.ZERO);
-        acc.setStatus("ACTIVE");
+        Account acc = Account.builder()
+                .accountNo(UUID.randomUUID().toString().substring(0, 10).toUpperCase())
+                .accountType(req.accountType())
+                .customerId(req.customerId())
+                .currency(req.currency() != null ? req.currency() : "USD")
+                .availableBalance(BigDecimal.ZERO)
+                .holdBalance(BigDecimal.ZERO)
+                .status("ACTIVE")
+                .build();
 
         Account saved = accountRepository.save(acc);
 
         return toResponse(saved);
     }
 
+    @Transactional(readOnly = true)
     public AccountResponse get(Long id) {
         return accountRepository.findById(id)
                 .map(this::toResponse)
                 .orElseThrow();
     }
 
+    @Transactional(readOnly = true)
     public List<AccountResponse> getByCustomer(Long customerId) {
         return accountRepository.findByCustomerId(customerId)
                 .stream()
@@ -49,7 +59,7 @@ public class AccountService {
         Account acc = accountRepository.findById(accountId)
                 .orElseThrow();
 
-        acc.setCurrentBalance(acc.getCurrentBalance().add(delta));
+        acc.setAvailableBalance(acc.getAvailableBalance().add(delta));
 
         Account saved = accountRepository.save(acc);
 
@@ -60,9 +70,10 @@ public class AccountService {
 
     private void snapshot(Account acc) {
 
-        AccountSnapshot snap = new AccountSnapshot();
-        snap.setAccountId(acc.getId());
-        snap.setBalance(acc.getCurrentBalance());
+        AccountSnapshot snap = AccountSnapshot.builder()
+                .accountId(acc.getId())
+                .balance(acc.getAvailableBalance())
+                .build();
 
         snapshotRepository.save(snap);
     }
@@ -73,7 +84,7 @@ public class AccountService {
                 acc.getCustomerId(),
                 acc.getAccountType(),
                 acc.getCurrency(),
-                acc.getCurrentBalance(),
+                acc.getAvailableBalance(),
                 acc.getStatus()
         );
     }
